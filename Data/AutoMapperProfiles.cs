@@ -8,8 +8,10 @@ namespace TrajnohuAPI.Data
     {
         public AutoMapperProfiles()
         {
-            CreateMap<FitnessExercise, GetFitnessExerciseDTO>();
-            CreateMap<AddFitnessExerciseDTO, FitnessExercise>();
+            CreateMap<Exercise, GetExerciseDTO>();
+            CreateMap<AddExerciseDTO, Exercise>();
+            CreateMap<FitnessPlan, GetFitnessPlanDTO>();
+            CreateMap<TrainingDay_Exercise, TrainingDayDTO>();  
         }
     }
 }

@@ -13,7 +13,8 @@ builder.Services.AddDbContext<TrajnohuDbContext>(options =>
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-builder.Services.AddTransient<FitnessExerciseService>();
+builder.Services.AddTransient<ExerciseService>();
+builder.Services.AddTransient<FitnessPlanService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

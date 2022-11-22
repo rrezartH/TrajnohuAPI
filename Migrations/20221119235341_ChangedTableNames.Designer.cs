@@ -11,8 +11,8 @@ using TrajnohuAPI.Data;
 namespace TrajnohuAPI.Migrations
 {
     [DbContext(typeof(TrajnohuDbContext))]
-    [Migration("20221117183003_TrainingDayRemoved")]
-    partial class TrainingDayRemoved
+    [Migration("20221119235341_ChangedTableNames")]
+    partial class ChangedTableNames
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace TrajnohuAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.FitnessExercise", b =>
+            modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.Exercise", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,13 +47,16 @@ namespace TrajnohuAPI.Migrations
                     b.Property<string>("GifURL")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsHomeExercise")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("FitnessExercises");
+                    b.ToTable("Exercises");
                 });
 
             modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.FitnessPlan", b =>
@@ -78,7 +81,7 @@ namespace TrajnohuAPI.Migrations
                     b.ToTable("FitnessPlans");
                 });
 
-            modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.FitnessPlan_FitnessExercise", b =>
+            modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.TrainingDay", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -86,14 +89,30 @@ namespace TrajnohuAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Day")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrainingDays");
+                });
+
+            modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.TrainingDay_Exercise", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("FitnessExerciseId")
                         .HasColumnType("int");
 
                     b.Property<int>("FitnessPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TrainingDayId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -102,7 +121,9 @@ namespace TrajnohuAPI.Migrations
 
                     b.HasIndex("FitnessPlanId");
 
-                    b.ToTable("FitnessExercise_TrainingDays");
+                    b.HasIndex("TrainingDayId");
+
+                    b.ToTable("TrainingDay_Exercises");
                 });
 
             modelBuilder.Entity("TrajnohuAPI.Data.Models.User", b =>
@@ -141,33 +162,46 @@ namespace TrajnohuAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.FitnessPlan_FitnessExercise", b =>
+            modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.TrainingDay_Exercise", b =>
                 {
-                    b.HasOne("TrajnohuAPI.Data.Models.FitnessPlanModels.FitnessExercise", "FitnessExercise")
-                        .WithMany("FitnessExercise_TrainingDay")
+                    b.HasOne("TrajnohuAPI.Data.Models.FitnessPlanModels.Exercise", "FitnessExercise")
+                        .WithMany("TrainingDay_Exercises")
                         .HasForeignKey("FitnessExerciseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("TrajnohuAPI.Data.Models.FitnessPlanModels.FitnessPlan", "FitnessPlan")
-                        .WithMany("FitnessExercise_TrainingDays")
+                        .WithMany("TrainingDay_Exercises")
                         .HasForeignKey("FitnessPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TrajnohuAPI.Data.Models.FitnessPlanModels.TrainingDay", "TrainingDay")
+                        .WithMany("TrainingDay_Exercises")
+                        .HasForeignKey("TrainingDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("FitnessExercise");
 
                     b.Navigation("FitnessPlan");
+
+                    b.Navigation("TrainingDay");
                 });
 
-            modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.FitnessExercise", b =>
+            modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.Exercise", b =>
                 {
-                    b.Navigation("FitnessExercise_TrainingDay");
+                    b.Navigation("TrainingDay_Exercises");
                 });
 
             modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.FitnessPlan", b =>
                 {
-                    b.Navigation("FitnessExercise_TrainingDays");
+                    b.Navigation("TrainingDay_Exercises");
+                });
+
+            modelBuilder.Entity("TrajnohuAPI.Data.Models.FitnessPlanModels.TrainingDay", b =>
+                {
+                    b.Navigation("TrainingDay_Exercises");
                 });
 
             modelBuilder.Entity("TrajnohuAPI.Data.Models.User", b =>

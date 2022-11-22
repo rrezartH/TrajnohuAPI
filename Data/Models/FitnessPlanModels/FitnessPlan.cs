@@ -8,6 +8,6 @@
         //Navigation Properties
         public int UserId { get; set; }
         public User User { get; set; } = null!;
-        public ICollection<FitnessPlan_FitnessExercise>? FitnessExercise_TrainingDays { get; set; }
+        public ICollection<TrainingDay>? TrainingDays { get; set; }
     }
 }

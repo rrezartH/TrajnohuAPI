@@ -22,24 +22,30 @@ namespace TrajnohuAPI.Data
                 .HasMany(t => t.FitnessPlans)
                 .WithOne(tr => tr.User);
 
-            modelBuilder.Entity<FitnessPlan>()
-                .HasMany(t => t.FitnessExercise_TrainingDays)
-                .WithOne(tr => tr.FitnessPlan);
-
-            modelBuilder.Entity<FitnessPlan_FitnessExercise>()
+            modelBuilder.Entity<TrainingDay>()
                 .HasOne(t => t.FitnessPlan)
-                .WithMany(tr => tr.FitnessExercise_TrainingDays)
+                .WithMany(tr => tr.TrainingDays)
                 .HasForeignKey(tk => tk.FitnessPlanId);
 
-            modelBuilder.Entity<FitnessPlan_FitnessExercise>()
+            modelBuilder.Entity<FitnessPlan>()
+                .HasMany(t => t.TrainingDays)
+                .WithOne(tr => tr.FitnessPlan);
+
+            modelBuilder.Entity<TrainingDay_Exercise>()
                 .HasOne(t => t.FitnessExercise)
-                .WithMany(tr => tr.FitnessExercise_TrainingDay)
-                .HasForeignKey(tk => tk.FitnessExerciseId);            
+                .WithMany(tr => tr.TrainingDay_Exercises)
+                .HasForeignKey(tk => tk.FitnessExerciseId);
+
+            modelBuilder.Entity<TrainingDay_Exercise>()
+                .HasOne(t => t.TrainingDay)
+                .WithMany(tr => tr.TrainingDay_Exercises)
+                .HasForeignKey(tk => tk.TrainingDayId);
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<FitnessExercise> FitnessExercises { get; set; }
+        public DbSet<Exercise> Exercises { get; set; }
         public DbSet<FitnessPlan> FitnessPlans { get; set; }
-        public DbSet<FitnessPlan_FitnessExercise> FitnessExercise_TrainingDays { get; set; }
+        public DbSet<TrainingDay> TrainingDays { get; set; }
+        public DbSet<TrainingDay_Exercise> TrainingDay_Exercises { get; set; }
     }
 }
