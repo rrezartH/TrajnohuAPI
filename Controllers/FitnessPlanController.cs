@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using TrajnohuAPI.Data.DTOs;
 using TrajnohuAPI.Data.Services;
 
@@ -20,7 +21,18 @@ namespace TrajnohuAPI.Controllers
         public async Task<ActionResult<GetFitnessPlanDTO>> GetFitnessPlanById(int id)
         {
             var fitnessPlan = await _fitnessPlanService.GetFitnessPlanById(id);
-            return fitnessPlan;
+            if (fitnessPlan == null)
+                return NotFound("This fitness plan doesn't exist!");
+            return Ok(fitnessPlan);
+        }
+
+        [HttpGet("get-fitness-plans-by-user-id/{id}")]
+        public async Task<ActionResult<List<GetFitnessPlanDTO>>> GetFitnessPlansByUserId(int id)
+        {
+            var dbFitnessPlans = await _fitnessPlanService.GetFitnessPlansByUserId(id);
+            if (!dbFitnessPlans.Any())
+                return NotFound("This user doesn't have any fitness plans!");
+            return Ok(dbFitnessPlans);
         }
     }
 }

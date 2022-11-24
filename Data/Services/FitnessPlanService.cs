@@ -34,5 +34,26 @@ namespace TrajnohuAPI.Data.Services
                                                     .FirstOrDefaultAsync();
             return dbFitnessPlan;
         }
+
+        public async Task<List<GetFitnessPlanDTO>> GetFitnessPlansByUserId(int id)
+        {
+            var dbFitnessPlans = await _context.FitnessPlans
+                                                .Where(p => p.UserId == id)
+                                                    .Select(pl => new GetFitnessPlanDTO
+                                                    {
+                                                        Name = pl.Name,
+                                                        UserId = pl.UserId,
+                                                        TrainingDays = pl.TrainingDays!.Select(t => new TrainingDayDTO
+                                                        {
+                                                            Name = t.Name,
+                                                            Exercises = t.TrainingDay_Exercises!.Select(e => _mapper.Map<GetExerciseDTO>(e.FitnessExercise))
+                                                                                                .ToList()
+                                                        })
+                                                        .ToList()
+                                                    })
+                                                    .ToListAsync();
+
+            return dbFitnessPlans;
+        }
     }
 }
