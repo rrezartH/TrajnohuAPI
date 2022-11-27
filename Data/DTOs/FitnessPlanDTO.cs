@@ -4,6 +4,13 @@
     {
         public string Name { get; set; } = null!;
         public int UserId { get; set; }
-        public ICollection<TrainingDayDTO>? TrainingDays { get; set; }
+        public ICollection<GetTrainingDayDTO>? TrainingDays { get; set; }
+    }
+
+    public class AddFitnessPlanDTO
+    {
+        public string Name { get; set; } = null!;
+        public int UserId { get; set; }
+        public ICollection<AddTrainingDTO>? TrainingDays { get; set;}
     }
 }

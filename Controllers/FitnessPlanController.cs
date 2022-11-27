@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using TrajnohuAPI.Data.DTOs;
+using TrajnohuAPI.Data.Models.FitnessPlanModels;
 using TrajnohuAPI.Data.Services;
 
 namespace TrajnohuAPI.Controllers
@@ -33,6 +34,15 @@ namespace TrajnohuAPI.Controllers
             if (!dbFitnessPlans.Any())
                 return NotFound("This user doesn't have any fitness plans!");
             return Ok(dbFitnessPlans);
+        }
+
+        [HttpPost("add-fitness-plan")]
+        public async Task<ActionResult<FitnessPlan>> AddFitnessPlan(AddFitnessPlanDTO fitnessPlanDTO)
+        {
+            if (fitnessPlanDTO == null)
+                return BadRequest("You can't add an empty fitness plan!");
+            await _fitnessPlanService.AddFitnessPlan(fitnessPlanDTO);
+            return Ok("You added a fitness plan succesfully!");
         }
     }
 }
