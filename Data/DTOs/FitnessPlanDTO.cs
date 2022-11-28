@@ -2,6 +2,7 @@
 {
     public class GetFitnessPlanDTO
     {
+        public int Id { get; set; }
         public string Name { get; set; } = null!;
         public int UserId { get; set; }
         public ICollection<GetTrainingDayDTO>? TrainingDays { get; set; }

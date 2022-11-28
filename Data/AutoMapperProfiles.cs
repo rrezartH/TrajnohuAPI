@@ -13,6 +13,8 @@ namespace TrajnohuAPI.Data
             CreateMap<FitnessPlan, GetFitnessPlanDTO>();
             CreateMap<AddFitnessPlanDTO, FitnessPlan>();
             CreateMap<TrainingDay_Exercise, GetTrainingDayDTO>();  
+            CreateMap<TrainingDay, GetTrainingDayDTO>();
+            CreateMap<AddTrainingDTO, TrainingDay>();
         }
     }
 }

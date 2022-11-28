@@ -23,10 +23,12 @@ namespace TrajnohuAPI.Data.Services
                                                 .Where(p => p.Id == id)
                                                     .Select(pl => new GetFitnessPlanDTO
                                                     {
+                                                        Id = pl.Id,
                                                         Name = pl.Name,
                                                         UserId = pl.UserId,
                                                         TrainingDays = pl.TrainingDays!.Select(t => new GetTrainingDayDTO
                                                         {
+                                                            Id = t.Id,
                                                             Name = t.Name,
                                                             Exercises = t.TrainingDay_Exercises!.Select(e => _mapper.Map<GetExerciseDTO>(e.FitnessExercise))
                                                                                                 .ToList()
@@ -43,10 +45,12 @@ namespace TrajnohuAPI.Data.Services
                                                 .Where(p => p.UserId == id)
                                                     .Select(pl => new GetFitnessPlanDTO
                                                     {
+                                                        Id = pl.Id,
                                                         Name = pl.Name,
                                                         UserId = pl.UserId,
                                                         TrainingDays = pl.TrainingDays!.Select(t => new GetTrainingDayDTO
                                                         {
+                                                            Id = t.Id,
                                                             Name = t.Name,
                                                             Exercises = t.TrainingDay_Exercises!.Select(e => _mapper.Map<GetExerciseDTO>(e.FitnessExercise))
                                                                                                 .ToList()
@@ -58,7 +62,7 @@ namespace TrajnohuAPI.Data.Services
             return dbFitnessPlans;
         }
 
-        public async Task<FitnessPlan> AddFitnessPlan(AddFitnessPlanDTO fitnessPlanDTO)
+        public async Task AddFitnessPlan(AddFitnessPlanDTO fitnessPlanDTO)
         {
             var fitnessPlan = new FitnessPlan
             {
@@ -96,7 +100,6 @@ namespace TrajnohuAPI.Data.Services
 
                 }
             }
-            return fitnessPlan;
         }
     }
 }

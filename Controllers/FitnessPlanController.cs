@@ -37,7 +37,7 @@ namespace TrajnohuAPI.Controllers
         }
 
         [HttpPost("add-fitness-plan")]
-        public async Task<ActionResult<FitnessPlan>> AddFitnessPlan(AddFitnessPlanDTO fitnessPlanDTO)
+        public async Task<ActionResult> AddFitnessPlan(AddFitnessPlanDTO fitnessPlanDTO)
         {
             if (fitnessPlanDTO == null)
                 return BadRequest("You can't add an empty fitness plan!");
