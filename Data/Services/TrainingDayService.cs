@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrajnohuAPI.Data.DTOs;
 using TrajnohuAPI.Data.Models.FitnessPlanModels;
@@ -22,6 +23,7 @@ namespace TrajnohuAPI.Data.Services
                                                 .Where(t => t.FitnessPlanId == id)
                                                 .Select(td => new GetTrainingDayDTO
                                                 {
+                                                    Id = td.Id,
                                                     Name = td.Name,
                                                     Exercises = td.TrainingDay_Exercises
                                                                 .Where(trr => trr.TrainingDayId == td.Id)
@@ -70,6 +72,12 @@ namespace TrajnohuAPI.Data.Services
                 };
                 await _context.TrainingDay_Exercises.AddAsync(trainingDay_Exercise);
             }
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteTrainingDay(TrainingDay trainingDay)
+        {
+            _context.TrainingDays.Remove(trainingDay);
             await _context.SaveChangesAsync();
         }
     }

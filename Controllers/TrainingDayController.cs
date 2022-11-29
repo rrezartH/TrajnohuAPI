@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Data.OleDb;
+﻿using Microsoft.AspNetCore.Mvc;
+using TrajnohuAPI.Data;
 using TrajnohuAPI.Data.DTOs;
 using TrajnohuAPI.Data.Services;
 
@@ -10,10 +9,12 @@ namespace TrajnohuAPI.Controllers
     [ApiController]
     public class TrainingDayController : ControllerBase
     {
+        private readonly TrajnohuDbContext _context;
         private readonly TrainingDayService _trainingDayService;
 
-        public TrainingDayController(TrainingDayService trainingDayService)
+        public TrainingDayController(TrainingDayService trainingDayService, TrajnohuDbContext context)
         {
+            _context = context;
             _trainingDayService = trainingDayService;
         }
 
@@ -44,6 +45,18 @@ namespace TrajnohuAPI.Controllers
             await _trainingDayService.AddExercisesToTrainingDayById(trainingDayId, exerciseIds);
 
             return Ok("Exercises were added succesfully!");
+        }
+
+        [HttpDelete("delete-training-by-id/{id}")]
+        public async Task<ActionResult> DeleteTrainingDayById(int id)
+        {
+            var dbTrainingDay = await _context.TrainingDays.FindAsync(id);
+
+            if (dbTrainingDay == null) return BadRequest("This training day doesn't exist.");
+
+            await _trainingDayService.DeleteTrainingDay(dbTrainingDay);
+
+            return Ok("This training day was deleted succesfully.");
         }
     }
 }
