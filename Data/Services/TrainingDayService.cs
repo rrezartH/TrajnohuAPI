@@ -17,7 +17,7 @@ namespace TrajnohuAPI.Data.Services
             _mapper = mapper;
         }
 
-        public async Task<ICollection<GetTrainingDayDTO>> GetUserTrainingDaysById(int id)
+        public async Task<ActionResult<ICollection<GetTrainingDayDTO>>> GetFitnessPlanTrainingDaysById(int id)
         {
             var dbTrainingDays = await _context.TrainingDays
                                                 .Where(t => t.FitnessPlanId == id)
@@ -25,18 +25,27 @@ namespace TrajnohuAPI.Data.Services
                                                 {
                                                     Id = td.Id,
                                                     Name = td.Name,
-                                                    Exercises = td.TrainingDay_Exercises
+                                                    Exercises = td.TrainingDay_Exercises!
                                                                 .Where(trr => trr.TrainingDayId == td.Id)
                                                                 .Select(tr => _mapper.Map<GetExerciseDTO>(tr.FitnessExercise))
                                                                 .ToList()
                                                 })
                                                 .ToListAsync();
 
-            return dbTrainingDays;
+            if (dbTrainingDays.Count < 1)
+                return new NotFoundObjectResult("There are no training days for this user.");
+
+            return new OkObjectResult(dbTrainingDays);
         }
 
-        public async Task AddTrainingDayToFitnessPlan(int fitnessPlanId, AddTrainingDTO addTrainingDTO)
+        public async Task<ActionResult> AddTrainingDayToFitnessPlan(int fitnessPlanId, AddTrainingDTO addTrainingDTO)
         {
+            if (await _context.FitnessPlans.FindAsync(fitnessPlanId) == null)
+                return new NotFoundObjectResult("The fitness plan you are trying to add the training day doesn't exist.");
+
+            if (addTrainingDTO == null)
+                return new BadRequestObjectResult("You can't add an empty training day.");
+           
             var trainingDay = new TrainingDay
             {
                 Name = addTrainingDTO.Name,
@@ -59,11 +68,19 @@ namespace TrajnohuAPI.Data.Services
                 }
                 await _context.SaveChangesAsync();
             }
+
+            return new OkObjectResult("Training day added succesfully.");
         }
 
-        public async Task AddExercisesToTrainingDayById(int trainingDayId, int[] exerciseIds)
+        public async Task<ActionResult> AddExercisesToTrainingDayById(int trainingDayId, int[] exerciseIds)
         {
-            foreach(int exerciseId in exerciseIds)
+            if (await _context.TrainingDays.FindAsync(trainingDayId) == null)
+                return new NotFoundObjectResult("The training day you are trying to add the exercises doesn't exist.");
+
+            if (exerciseIds == null || exerciseIds.Length < 1)
+                return new BadRequestObjectResult("There are no exercises to be added.");
+
+            foreach (int exerciseId in exerciseIds)
             {
                 var trainingDay_Exercise = new TrainingDay_Exercise
                 {
@@ -73,12 +90,18 @@ namespace TrajnohuAPI.Data.Services
                 await _context.TrainingDay_Exercises.AddAsync(trainingDay_Exercise);
             }
             await _context.SaveChangesAsync();
+            return new OkObjectResult("Exercises added succesfully.");
         }
 
-        public async Task DeleteTrainingDay(TrainingDay trainingDay)
+        public async Task<ActionResult> DeleteTrainingDay(int id)
         {
-            _context.TrainingDays.Remove(trainingDay);
+            var dbTrainingDay = await _context.TrainingDays.FindAsync(id);
+            if (dbTrainingDay == null)
+                return new NotFoundObjectResult("Training day can't be null.");
+
+            _context.TrainingDays.Remove(dbTrainingDay);
             await _context.SaveChangesAsync();
+            return new OkObjectResult("Training day deleted succesfully");
         }
     }
 }

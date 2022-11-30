@@ -26,39 +26,26 @@ namespace TrajnohuAPI.Controllers
         [HttpGet("get-exercise-by-id/{id}")]
         public async Task<ActionResult<GetExerciseDTO>> GetExerciseById(int id)
         {
-            var fitnessExercise = await _exerciseService.GetExerciseById(id);
-            if (fitnessExercise == null)
-                return NotFound("This exercise doesn't exist!");
-            return Ok(fitnessExercise);
+            return await _exerciseService.GetExerciseById(id);
         }
 
         [HttpPost("add-exercise")]
-        public async Task<ActionResult> AddExercise(AddExerciseDTO addFitnessExerciseDTO)
+        public async Task<ActionResult> AddExercise(AddExerciseDTO addExerciseDTO)
         {
-            if (addFitnessExerciseDTO == null)
-                return BadRequest("A fitness exercise can't be null!");
-            await _exerciseService.AddExercise(addFitnessExerciseDTO);
-            return Ok("You added a fitness exercise succesfully!");
+            return await _exerciseService.AddExercise(addExerciseDTO);
         }
 
         [HttpPut("update-exercise/{id}")]
-        public async Task<ActionResult> UpdateExercise(int id, UpdateExerciseDTO updateFitnessExerciseDTO)
+        public async Task<ActionResult> UpdateExercise(int id, UpdateExerciseDTO updateExerciseDTO)
         {
-            if (updateFitnessExerciseDTO == null)
-                return BadRequest("A fitness exercise can't be null!");
-
-            if (await _exerciseService.UpdateExercise(id, updateFitnessExerciseDTO))
-                return Ok("You have updated the fitness exercise succesfully!");
-
-            return NotFound("The fitness exercise with this ID couldn't be found!");
+            return await _exerciseService.UpdateExercise(id, updateExerciseDTO);
         }
 
         [HttpDelete("delete-exercise/{id}")]
         public async Task<ActionResult> DeleteExercise(int id)
         {
-            if (await _exerciseService.DeleteExerciseById(id))
-                return Ok("You have deleted the fitness exercise succesfully!");
-            return NotFound("The fitness exercise with this ID couldn't be found!");
+            return await _exerciseService.DeleteExerciseById(id);
         }
     }
 }
+ 

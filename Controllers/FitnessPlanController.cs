@@ -21,28 +21,19 @@ namespace TrajnohuAPI.Controllers
         [HttpGet("get-fitness-plan-by-id/{id}")]
         public async Task<ActionResult<GetFitnessPlanDTO>> GetFitnessPlanById(int id)
         {
-            var fitnessPlan = await _fitnessPlanService.GetFitnessPlanById(id);
-            if (fitnessPlan == null)
-                return NotFound("This fitness plan doesn't exist!");
-            return Ok(fitnessPlan);
+            return await _fitnessPlanService.GetFitnessPlanById(id);
         }
 
         [HttpGet("get-fitness-plans-by-user-id/{id}")]
         public async Task<ActionResult<List<GetFitnessPlanDTO>>> GetFitnessPlansByUserId(int id)
         {
-            var dbFitnessPlans = await _fitnessPlanService.GetFitnessPlansByUserId(id);
-            if (!dbFitnessPlans.Any())
-                return NotFound("This user doesn't have any fitness plans!");
-            return Ok(dbFitnessPlans);
+            return await _fitnessPlanService.GetFitnessPlansByUserId(id);
         }
 
         [HttpPost("add-fitness-plan")]
         public async Task<ActionResult> AddFitnessPlan(AddFitnessPlanDTO fitnessPlanDTO)
         {
-            if (fitnessPlanDTO == null)
-                return BadRequest("You can't add an empty fitness plan!");
-            await _fitnessPlanService.AddFitnessPlan(fitnessPlanDTO);
-            return Ok("You added a fitness plan succesfully!");
+            return await _fitnessPlanService.AddFitnessPlan(fitnessPlanDTO);
         }
     }
 }

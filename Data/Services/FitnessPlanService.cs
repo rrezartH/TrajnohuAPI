@@ -17,7 +17,7 @@ namespace TrajnohuAPI.Data.Services
             _context = context;
         }
 
-        public async Task<GetFitnessPlanDTO?> GetFitnessPlanById(int id)
+        public async Task<ActionResult> GetFitnessPlanById(int id)
         {
             var dbFitnessPlan = await _context.FitnessPlans
                                                 .Where(p => p.Id == id)
@@ -36,10 +36,14 @@ namespace TrajnohuAPI.Data.Services
                                                         .ToList()
                                                     })
                                                     .FirstOrDefaultAsync();
-            return dbFitnessPlan;
+
+            if (dbFitnessPlan == null)
+                return new NotFoundObjectResult("Fitness plan couldn't be found.");
+
+            return new OkObjectResult(dbFitnessPlan);
         }
 
-        public async Task<List<GetFitnessPlanDTO>> GetFitnessPlansByUserId(int id)
+        public async Task<ActionResult> GetFitnessPlansByUserId(int id)
         {
             var dbFitnessPlans = await _context.FitnessPlans
                                                 .Where(p => p.UserId == id)
@@ -59,11 +63,17 @@ namespace TrajnohuAPI.Data.Services
                                                     })
                                                     .ToListAsync();
 
-            return dbFitnessPlans;
+            if (dbFitnessPlans.Count < 1 )
+                return new NotFoundObjectResult("There are no fitness plans.");
+
+            return new OkObjectResult(dbFitnessPlans);
         }
 
-        public async Task AddFitnessPlan(AddFitnessPlanDTO fitnessPlanDTO)
+        public async Task<ActionResult> AddFitnessPlan(AddFitnessPlanDTO fitnessPlanDTO)
         {
+            if (fitnessPlanDTO == null)
+                return new BadRequestObjectResult("You can't add an empty fitness plan.");
+
             var fitnessPlan = new FitnessPlan
             {
                 Name = fitnessPlanDTO.Name,
@@ -97,9 +107,9 @@ namespace TrajnohuAPI.Data.Services
                             await _context.SaveChangesAsync();
                         }
                     }
-
                 }
             }
+            return new OkObjectResult("Fitness plan added succesfully!");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrajnohuAPI.Data.DTOs;
 using TrajnohuAPI.Data.Models.FitnessPlanModels;
@@ -21,23 +22,32 @@ namespace TrajnohuAPI.Data.Services
             return _mapper.Map<List<GetExerciseDTO>>(await _context.Exercises.ToListAsync());
         }
 
-        public async Task<GetExerciseDTO> GetExerciseById(int id)
+        public async Task<ActionResult> GetExerciseById(int id)
         {
-            return _mapper.Map<GetExerciseDTO>(await _context.Exercises.FindAsync(id));
+            var mappedExercise = _mapper.Map<GetExerciseDTO>(await _context.Exercises.FindAsync(id));
+            if (mappedExercise == null)
+                return new NotFoundObjectResult("Exercise couldn't be found.");
+            return new OkObjectResult(mappedExercise);
         }
 
-        public async Task AddExercise(AddExerciseDTO addExerciseDTO)
+        public async Task<ActionResult> AddExercise(AddExerciseDTO addExerciseDTO)
         {
+            if (addExerciseDTO == null)
+                return new BadRequestObjectResult("A fitness exercise can't be null!");
             var fitnessExercise = _mapper.Map<Exercise>(addExerciseDTO);
             await _context.Exercises.AddAsync(fitnessExercise);
             await _context.SaveChangesAsync();
+            return new OkObjectResult("Exercise added succesfully.");
         }
 
-        public async Task<bool> UpdateExercise(int id, UpdateExerciseDTO updateExerciseDTO)
+        public async Task<ActionResult> UpdateExercise(int id, UpdateExerciseDTO updateExerciseDTO)
         {
+            if (updateExerciseDTO == null)
+                return new BadRequestObjectResult("A fitness exercise can't be null!");
+
             var dbExercise = await _context.Exercises.FindAsync(id);
             if (dbExercise == null)
-                return false;
+                return new NotFoundObjectResult("This exercise doesn't exist.");
 
             dbExercise.Name = updateExerciseDTO.Name ?? dbExercise.Name;
             dbExercise.BodyTarget = updateExerciseDTO.BodyTarget ?? dbExercise.BodyTarget;
@@ -47,18 +57,18 @@ namespace TrajnohuAPI.Data.Services
             dbExercise.IsHomeExercise = updateExerciseDTO.IsHomeExercise;
             await _context.SaveChangesAsync();
 
-            return true;
+            return new OkObjectResult("Exercise updated succesfully.");
         }
 
-        public async Task<bool> DeleteExerciseById(int id)
+        public async Task<ActionResult> DeleteExerciseById(int id)
         {
             var dbExercise = await _context.Exercises.FindAsync(id);
             if (dbExercise == null)
-                return false;
+                return new NotFoundObjectResult("This exercise doesn't exist.");
 
             _context.Exercises.Remove(dbExercise);
             await _context.SaveChangesAsync();
-            return true;
+            return new OkObjectResult("Exercise deleted succesfully!");
         }
     }
 }
