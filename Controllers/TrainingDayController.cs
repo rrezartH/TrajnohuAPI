@@ -22,7 +22,7 @@ namespace TrajnohuAPI.Controllers
         }
 
         [HttpPost("add-training-day-to-fitness-plan-by-id/{fitnessPlanId}")]
-        public async Task<ActionResult> AddTrainingDayToFitnessPlanById(int fitnessPlanId, AddTrainingDTO addTrainingDTO)
+        public async Task<ActionResult> AddTrainingDayToFitnessPlanById(int fitnessPlanId, AddTrainingDayDTO addTrainingDTO)
         {          
             return await _trainingDayService.AddTrainingDayToFitnessPlan(fitnessPlanId, addTrainingDTO);
         }
@@ -31,6 +31,18 @@ namespace TrajnohuAPI.Controllers
         public async Task<ActionResult> AddExercisesToTrainingDayById(int trainingDayId, int[] exerciseIds)
         {
             return await _trainingDayService.AddExercisesToTrainingDayById(trainingDayId, exerciseIds); ;
+        }
+
+        [HttpPut("update-training-day/{id}")]
+        public async Task<ActionResult> UpdateTrainingDay(int id, UpdateTrainingDayDTO updateTrainingDayDTO)
+        {
+            return await _trainingDayService.UpdateTrainingDay(id, updateTrainingDayDTO);
+        }
+
+        [HttpDelete("remove-exercises-from-training-day/{id}")]
+        public async Task<ActionResult> RemoveExercisesFromTrainingDay(int id, int[] exerciseIds)
+        {
+            return await _trainingDayService.RemoveExercisesFromTrainingDay(id, exerciseIds);
         }
 
         [HttpDelete("delete-training-by-id/{id}")]

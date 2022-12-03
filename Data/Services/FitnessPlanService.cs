@@ -84,7 +84,7 @@ namespace TrajnohuAPI.Data.Services
 
             if (fitnessPlanDTO.TrainingDays != null)
             {
-                foreach (AddTrainingDTO tD in fitnessPlanDTO.TrainingDays)
+                foreach (AddTrainingDayDTO tD in fitnessPlanDTO.TrainingDays)
                 {
                     var trainingDay = new TrainingDay
                     {

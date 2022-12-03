@@ -38,14 +38,14 @@ namespace TrajnohuAPI.Data.Services
             return new OkObjectResult(dbTrainingDays);
         }
 
-        public async Task<ActionResult> AddTrainingDayToFitnessPlan(int fitnessPlanId, AddTrainingDTO addTrainingDTO)
+        public async Task<ActionResult> AddTrainingDayToFitnessPlan(int fitnessPlanId, AddTrainingDayDTO addTrainingDTO)
         {
             if (await _context.FitnessPlans.FindAsync(fitnessPlanId) == null)
                 return new NotFoundObjectResult("The fitness plan you are trying to add the training day doesn't exist.");
 
             if (addTrainingDTO == null)
                 return new BadRequestObjectResult("You can't add an empty training day.");
-           
+
             var trainingDay = new TrainingDay
             {
                 Name = addTrainingDTO.Name,
@@ -93,6 +93,56 @@ namespace TrajnohuAPI.Data.Services
             return new OkObjectResult("Exercises added succesfully.");
         }
 
+        public async Task<ActionResult> UpdateTrainingDay(int id, UpdateTrainingDayDTO updateTrainingDayDTO)
+        {
+            if (updateTrainingDayDTO == null)
+                return new BadRequestObjectResult("There's nothing to update.");
+
+            var dbTrainingDay = await _context.TrainingDays.FindAsync(id);
+            if (dbTrainingDay == null)
+                return new NotFoundObjectResult("The training day couldn't be found.");
+
+            dbTrainingDay.Name = updateTrainingDayDTO.Name ?? dbTrainingDay.Name;
+            if (updateTrainingDayDTO.ExerciseIds != null)
+            {
+                //get exercises that the user has already in its training day
+                var selectedExercises = await _context.TrainingDay_Exercises
+                                                        .Where(t => t.TrainingDayId == id)
+                                                        .Select(tr => tr.FitnessExerciseId)
+                                                        .ToListAsync();
+
+                foreach (int exerciseId in updateTrainingDayDTO.ExerciseIds.Except(selectedExercises))
+                {
+                    var trainingDay_Exercise = new TrainingDay_Exercise
+                    {
+                        TrainingDayId = dbTrainingDay.Id,
+                        FitnessExerciseId = exerciseId,
+                    };
+                    await _context.TrainingDay_Exercises.AddAsync(trainingDay_Exercise);
+                }
+            }
+            await _context.SaveChangesAsync();
+            return new OkObjectResult("Training day updated succesfully.");
+        }
+
+        public async Task<ActionResult> RemoveExercisesFromTrainingDay(int id, int[] exerciseIds)
+        {
+            if (await _context.TrainingDays.FindAsync(id) == null)
+                return new NotFoundObjectResult("This training day doesn't exist.");
+
+            foreach(int exerciseId in exerciseIds)
+            {
+                var dbTrEx = await _context.TrainingDay_Exercises.Where(e => e.TrainingDayId == id && e.FitnessExerciseId == exerciseId)
+                                                    .FirstOrDefaultAsync();
+
+                if (dbTrEx != null)
+                    _context.TrainingDay_Exercises.Remove(dbTrEx);
+            }
+            await _context.SaveChangesAsync();
+
+            return new OkObjectResult("The exercises were removed succesfully from your training day.");
+        }
+
         public async Task<ActionResult> DeleteTrainingDay(int id)
         {
             var dbTrainingDay = await _context.TrainingDays.FindAsync(id);
@@ -103,5 +153,6 @@ namespace TrajnohuAPI.Data.Services
             await _context.SaveChangesAsync();
             return new OkObjectResult("Training day deleted succesfully");
         }
+
     }
 }

@@ -12,6 +12,6 @@
     {
         public string Name { get; set; } = null!;
         public int UserId { get; set; }
-        public ICollection<AddTrainingDTO>? TrainingDays { get; set;}
+        public ICollection<AddTrainingDayDTO>? TrainingDays { get; set;}
     }
 }
